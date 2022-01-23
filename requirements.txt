@@ -1,0 +1,3 @@
+-r requirements/build-pkg.txt
+-r requirements/make-release.txt
+-r requirements/pkg-deps.txt

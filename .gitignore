@@ -1,0 +1,45 @@
+# Generated Files
+src/idom_bokeh/bundle.js
+
+# --- Jupyter ---
+*.ipynb_checkpoints
+Untitled*.ipynb
+
+# --- Jupyter Repo 2 Docker ---
+.local
+.ipython
+.cache
+.bash_history
+.python_history
+.jupyter
+
+# --- Python ---
+.venv
+venv
+MANIFEST
+build
+dist
+.eggs
+*.egg-info
+__pycache__/
+*.py[cod]
+.tox
+.nox
+pip-wheel-metadata
+
+# --- PyEnv ---
+.python-version
+
+# -- Python Tests ---
+*.coverage
+*.pytest_cache
+*.mypy_cache
+
+# --- IDE ---
+.idea
+.vscode
+
+# --- JS ---
+
+node_modules
+src/idom/client
