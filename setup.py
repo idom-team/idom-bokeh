@@ -128,7 +128,7 @@ def build_javascript_first(cls, rebuild=False):
         def run(self):
             build_bokeh_extension(JS_DIR, rebuild=rebuild)
             shutil.move(
-                str(JS_DIR / "dist" / f"{JS_DIR.name}.js"),
+                str(JS_DIR / "dist" / f"{JS_DIR.name}.min.js"),
                 str(PKG_DIR / "bundle.js"),
             )
             super().run()

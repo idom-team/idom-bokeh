@@ -1,17 +1,16 @@
-import sys
 import shutil
+import sys
 import asyncio
-
 from functools import partial
 from threading import Thread
 from queue import Queue as SyncQueue
-from packaging.version import Version
 
 from panel.io.notebook import push_on_root
-from panel.io.resources import DIST_DIR, LOCAL_DIST
+from panel.io.resources import LOCAL_DIST
 from panel.io.state import state
 from panel.pane.base import PaneBase
 from panel.depends import param_value_if_widget
+from panel.io.resources import DIST_DIR
 
 from idom import use_state
 from idom.config import IDOM_WED_MODULES_DIR
@@ -19,22 +18,14 @@ from idom.core.component import ComponentType
 from idom.core.layout import Layout, LayoutUpdate, LayoutEvent
 from idom.core.dispatcher import VdomJsonPatch
 
-from .model import IDOM as _BkIDOM
+from ._model import IDOM as _IdomModel
 
 
-def _spawn_threaded_event_loop(coro):
-    loop_q = SyncQueue()
-
-    def run_in_thread():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop_q.put(loop)
-        loop.run_until_complete(coro)
-
-    thread = Thread(target=run_in_thread, daemon=True)
-    thread.start()
-
-    return thread, loop_q.get()
+new_web_modules_dir = DIST_DIR / "idom"
+if new_web_modules_dir.exists():
+    shutil.rmtree(str(new_web_modules_dir))
+shutil.copytree(str(IDOM_WED_MODULES_DIR.current), str(new_web_modules_dir)),
+IDOM_WED_MODULES_DIR.current = new_web_modules_dir
 
 
 class IDOM(PaneBase):
@@ -45,20 +36,14 @@ class IDOM(PaneBase):
 
     _unpack = True
 
-    _bokeh_model = _BkIDOM
+    _bokeh_model = _IdomModel
 
     def __init__(self, object=None, **params):
-        new_web_modules_dir = DIST_DIR / "idom"
-        if new_web_modules_dir.exists():
-            shutil.rmtree(str(new_web_modules_dir))
-        shutil.copytree(str(IDOM_WED_MODULES_DIR.current), str(new_web_modules_dir))
-        IDOM_WED_MODULES_DIR.current = new_web_modules_dir
-
         super().__init__(object, **params)
         self._idom_thread: Thread = None
         self._idom_loop: asyncio.AbstractEventLoop = None
         self._idom_model = {}
-        self.param.watch(self._update_layout, 'object')
+        self.param.watch(self._update_layout, "object")
 
     def _update_layout(self, *args):
         self._idom_model = {}
@@ -81,9 +66,9 @@ class IDOM(PaneBase):
 
     def _get_model(self, doc, root=None, parent=None, comm=None):
         if comm:
-            url = '/panel_dist/idom'
+            url = "/panel_dist/idom"
         else:
-            url = '/'+LOCAL_DIST+'idom'
+            url = "/" + LOCAL_DIST + "idom"
 
         if self._idom_loop is None:
             self._setup()
@@ -95,11 +80,11 @@ class IDOM(PaneBase):
         )
         if root is None:
             root = model
-        self._link_props(model, ['msg'], doc, root, comm)
+        self._link_props(model, ["msg"], doc, root, comm)
 
         if root is None:
             root = model
-        self._models[root.ref['id']] = (model, parent)
+        self._models[root.ref["id"]] = (model, parent)
         return model
 
     def _cleanup(self, root):
@@ -130,9 +115,9 @@ class IDOM(PaneBase):
                 self._idom_layout = None
 
     def _process_property_change(self, msg):
-        if msg['msg'] is None:
+        if msg["msg"] is None:
             return {}
-        dispatch = self._idom_layout.dispatch(LayoutEvent(**msg['msg']))
+        dispatch = self._idom_layout.dispatch(LayoutEvent(**msg["msg"]))
         asyncio.run_coroutine_threadsafe(dispatch, loop=self._idom_loop)
         for ref, (m, _) in self._models.items():
             m.msg = None
@@ -154,7 +139,7 @@ class IDOM(PaneBase):
 
     @classmethod
     def applies(self, object):
-        if 'idom' in sys.modules:
+        if "idom" in sys.modules:
             if isinstance(object, (ComponentType, Layout)):
                 return 0.8
             elif callable(object):
@@ -179,7 +164,24 @@ class IDOM(PaneBase):
         parameter = param_value_if_widget(parameter)
         initial = getattr(parameter.owner, parameter.name)
         value, set_value = use_state(initial)
+
         def update(event):
             set_value(event.new)
+
         parameter.owner.param.watch(update, parameter.name)
         return value
+
+
+def _spawn_threaded_event_loop(coro):
+    loop_q = SyncQueue()
+
+    def run_in_thread():
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop_q.put(loop)
+        loop.run_until_complete(coro)
+
+    thread = Thread(target=run_in_thread, daemon=True)
+    thread.start()
+
+    return thread, loop_q.get()

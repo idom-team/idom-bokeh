@@ -2,6 +2,8 @@ import { mountLayout } from "idom-client-react";
 
 import * as p from "@bokehjs/core/properties";
 import { HTMLBox } from "@bokehjs/models/layouts/html_box";
+import { register_models } from "@bokehjs/base";
+
 import { PanelHTMLBoxView, set_size } from "./layout";
 
 export class IDOMView extends PanelHTMLBoxView {
@@ -92,7 +94,7 @@ export class IDOM extends HTMLBox {
     super(attrs);
   }
 
-  static __module__ = "panel.models.idom";
+  static __module__ = "idom_bokeh._model";
 
   static init_IDOM(): void {
     this.prototype.default_view = IDOMView;
@@ -103,3 +105,5 @@ export class IDOM extends HTMLBox {
     }));
   }
 }
+
+register_models([IDOMView]);
