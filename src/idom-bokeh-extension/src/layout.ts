@@ -33,7 +33,6 @@ import { VariadicBox } from "@bokehjs/core/layout/html";
 import { Size, SizeHint, Sizeable } from "@bokehjs/core/layout/types";
 import { sized, content_size, extents } from "@bokehjs/core/dom";
 
-import { MarkupView } from "@bokehjs/models/widgets/markup";
 import { HTMLBox, HTMLBoxView } from "@bokehjs/models/layouts/html_box";
 
 export function set_size(el: HTMLElement, model: HTMLBox): void {
@@ -119,28 +118,6 @@ export class CachedVariadicBox extends VariadicBox {
   }
 
   invalidate_cache(): void {}
-}
-
-export class PanelMarkupView extends MarkupView {
-  _prev_sizing_mode: string | null;
-
-  _update_layout(): void {
-    let changed =
-      this._prev_sizing_mode !== undefined &&
-      this._prev_sizing_mode !== this.model.sizing_mode;
-    this._prev_sizing_mode = this.model.sizing_mode;
-    this.layout = new CachedVariadicBox(
-      this.el,
-      this.model.sizing_mode,
-      changed
-    ) as any;
-    this.layout.set_sizing(this.box_sizing());
-  }
-
-  render(): void {
-    super.render();
-    set_size(this.markup_el, this.model);
-  }
 }
 
 export class PanelHTMLBoxView extends HTMLBoxView {
