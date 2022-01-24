@@ -106,4 +106,4 @@ export class IDOM extends HTMLBox {
   }
 }
 
-register_models([IDOMView]);
+register_models([IDOM]);

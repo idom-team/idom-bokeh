@@ -31,8 +31,6 @@ NAME = "idom_bokeh"
 ROOT_DIR = Path(__file__).parent
 SRC_DIR = ROOT_DIR / "src"
 PKG_DIR = SRC_DIR / NAME
-JS_DIR = SRC_DIR / "idom-bokeh-extension"
-
 
 # -----------------------------------------------------------------------------
 # Package Definition
@@ -126,11 +124,7 @@ package["long_description_content_type"] = "text/markdown"
 def build_javascript_first(cls, rebuild=False):
     class Command(cls):
         def run(self):
-            build_bokeh_extension(JS_DIR, rebuild=rebuild)
-            shutil.move(
-                str(JS_DIR / "dist" / f"{JS_DIR.name}.min.js"),
-                str(PKG_DIR / "bundle.js"),
-            )
+            build_bokeh_extension(PKG_DIR, rebuild=rebuild)
             super().run()
 
     return Command

@@ -4,7 +4,6 @@ from bokeh.models import HTMLBox
 
 class IDOM(HTMLBox):
 
-    __implementation__ = "bundle.js"
     importSourceUrl = String()
 
     event = Tuple(Any, Any)

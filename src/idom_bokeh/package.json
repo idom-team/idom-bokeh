@@ -4,9 +4,9 @@
   "author": "Ryan Morshead",
   "repository": {
     "type": "git",
-    "url": "{{ cookiecutter.repository_url }}"
+    "url": "https://github.com/idom-team/idom-bokeh"
   },
-  "main": "src/index.js",
+  "main": "dist/idom_bokeh.min.js",
   "files": [
     "src/**/*.js"
   ],
