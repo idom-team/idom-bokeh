@@ -1,10 +1,12 @@
 from __future__ import print_function
 
+import os
 import pipes
 import shutil
 import subprocess
 import sys
 import traceback
+
 from distutils import log
 from distutils.command.build import build  # type: ignore
 from distutils.command.sdist import sdist  # type: ignore
@@ -125,6 +127,12 @@ def build_javascript_first(cls, rebuild=False):
     class Command(cls):
         def run(self):
             build_bokeh_extension(PKG_DIR, rebuild=rebuild)
+            npm = "npm" if sys.platform != "win32" else "npm.bat"
+            os.chdir("src/idom_bokeh")
+            try:
+                self.spawn([npm, "run", "rollup"])
+            finally:
+                os.chdir("../..")
             super().run()
 
     return Command

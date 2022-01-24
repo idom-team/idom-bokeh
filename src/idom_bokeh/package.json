@@ -1,17 +1,18 @@
 {
-  "name": "idom-bokeh-extension",
+  "name": "idom-bokeh",
+  "version": "0.0.1",
   "description": "A Bokeh extension for IDOM",
   "author": "Ryan Morshead",
   "repository": {
     "type": "git",
     "url": "https://github.com/idom-team/idom-bokeh"
   },
-  "main": "dist/idom_bokeh.min.js",
+  "main": "dist/idom_bokeh.js",
   "files": [
     "src/**/*.js"
   ],
   "scripts": {
-    "build": "rollup --config",
+    "rollup": "rollup --config --preserveModules --no-treeshake ",
     "format": "prettier --ignore-path .gitignore --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
