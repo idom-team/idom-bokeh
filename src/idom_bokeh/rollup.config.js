@@ -12,5 +12,10 @@ export default {
       "process.env.NODE_ENV": JSON.stringify("production"),
       preventAssignment: true,
     }),
+    // Hacky workaround for avoiding __esExport
+    replace({
+      "__esExport(": "(",
+      delimiters: ['', '']
+    }),
   ],
 };
