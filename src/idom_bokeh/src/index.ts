@@ -20,10 +20,10 @@ export class IDOMEvent extends ModelEvent {
     for (let e of this.data.data) {
       e = {...e}
       if (e.target?.boundingClientRect != null) {
-	e.target.boundingClientRect = {...e.target.boundingClientReact}
+	e.target.boundingClientRect = {...e.target.boundingClientRect}
       }
       if (e.currenttarget?.boundingClientRect != null) {
-	e.target.boundingClientRect = {...e.currentTarget.boundingClientReact}
+	e.target.boundingClientRect = {...e.currentTarget.boundingClientRect}
       }
       events.push(e)
     }
