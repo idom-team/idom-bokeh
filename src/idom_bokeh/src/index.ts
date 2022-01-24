@@ -1,10 +1,36 @@
 import { mountLayout } from "idom-client-react";
 
+import {ModelEvent, JSON} from "@bokehjs/core/bokeh_events"
 import * as p from "@bokehjs/core/properties";
 import { HTMLBox } from "@bokehjs/models/layouts/html_box";
 import { register_models } from "@bokehjs/base";
 
 import { PanelHTMLBoxView, set_size } from "./layout";
+
+export class IDOMEvent extends ModelEvent {
+  event_name: string = "idom_event"
+
+  constructor(readonly data: any) {
+    super()
+  }
+
+  protected _to_json(): JSON {
+    const events = []
+    console.log(this.data)
+    for (let e of this.data.data) {
+      e = {...e}
+      if (e.target?.boundingClientRect != null) {
+	e.target.boundingClientRect = {...e.target.boundingClientReact}
+      }
+      if (e.currenttarget?.boundingClientRect != null) {
+	e.target.boundingClientRect = {...e.currentTarget.boundingClientReact}
+      }
+      events.push(e)
+    }
+    const data: any = {target: this.data.target, data: events}
+    return {model: this.origin, data: data}
+  }
+}
 
 export class IDOMView extends PanelHTMLBoxView {
   model: IDOM;
@@ -71,7 +97,7 @@ export class IDOMView extends PanelHTMLBoxView {
   }
 
   _send(event: any): any {
-    this.model.msg = event;
+    this.model.trigger_event(new IDOMEvent(event))
   }
 }
 
@@ -81,7 +107,6 @@ export namespace IDOM {
   export type Props = HTMLBox.Props & {
     event: p.Property<any>;
     importSourceUrl: p.Property<string>;
-    msg: p.Property<any>;
   };
 }
 
@@ -101,7 +126,6 @@ export class IDOM extends HTMLBox {
     this.define<IDOM.Props>(({ Any, String }) => ({
       event: [Any, []],
       importSourceUrl: [String, ""],
-      msg: [Any, {}],
     }));
   }
 }
