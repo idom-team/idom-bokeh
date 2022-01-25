@@ -16,7 +16,6 @@ export class IDOMEvent extends ModelEvent {
 
   protected _to_json(): JSON {
     const events = []
-    console.log(this.data)
     for (let e of this.data.data) {
       e = {...e}
       if (e.target?.boundingClientRect != null) {
