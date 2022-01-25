@@ -1,6 +1,7 @@
 import shutil
 import sys
 import asyncio
+
 from functools import partial
 from threading import Thread
 from queue import Queue as SyncQueue
@@ -78,14 +79,19 @@ class IDOM(PaneBase):
         model = self._bokeh_model(
             event=[update.path, update.changes], importSourceUrl=url, **props
         )
-        if root is None:
-            root = model
-        self._link_props(model, ["msg"], doc, root, comm)
+        if comm:
+            model.on_event('idom_event', self._comm_event)
+        else:
+            model.on_event('idom_event', partial(self._server_event, doc))
 
         if root is None:
             root = model
         self._models[root.ref["id"]] = (model, parent)
         return model
+
+    def _process_event(self, event):
+        dispatch = self._idom_layout.deliver(LayoutEvent(**event.data))
+        asyncio.run_coroutine_threadsafe(dispatch, loop=self._idom_loop)
 
     def _cleanup(self, root):
         super()._cleanup(root)
@@ -113,16 +119,6 @@ class IDOM(PaneBase):
                 self._idom_thread = None
                 self._idom_loop = None
                 self._idom_layout = None
-
-    def _process_property_change(self, msg):
-        if msg["msg"] is None:
-            return {}
-        dispatch = self._idom_layout.dispatch(LayoutEvent(**msg["msg"]))
-        asyncio.run_coroutine_threadsafe(dispatch, loop=self._idom_loop)
-        for ref, (m, _) in self._models.items():
-            m.msg = None
-            push_on_root(ref)
-        return {}
 
     async def _idom_layout_render_loop(self):
         with self._idom_layout:
