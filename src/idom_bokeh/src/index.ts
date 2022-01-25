@@ -21,7 +21,7 @@ export class IDOMEvent extends ModelEvent {
       if (e.target?.boundingClientRect != null) {
 	e.target.boundingClientRect = {...e.target.boundingClientRect}
       }
-      if (e.currenttarget?.boundingClientRect != null) {
+      if (e.currentTarget?.boundingClientRect != null) {
 	e.target.boundingClientRect = {...e.currentTarget.boundingClientRect}
       }
       events.push(e)
